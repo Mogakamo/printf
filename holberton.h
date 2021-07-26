@@ -1,41 +1,88 @@
-#ifndef HOLBERTON_H
-#define HOLBERTON_H
+#ifndef PRINTF
+#define PRINTF
 
-#include <unistd.h>
-#include <stdlib.h>
+#define BIT_SIZE 8
+#define true 1
+#define false 0
+typedef unsigned int bool;
+/*
+ *   a local buffer which will be used
+ *   to store data until a syscall is made to write it
+ *   in the std out
+ */
+#define BUFFER_SIZE 1024
+
 #include <stdarg.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-struct convert
+/**
+*struct printing_format - a struct for formating info
+*@flag: the flag used (+, -, '\0')
+*@width: the space taken during printing
+*@mod: modifier (l, h)
+*@precision: how manyt points after . in case of f
+*@zero_fill: --
+*@replaced: the total amount the format is holding
+*@validity: is this format a complete format
+*@printer: a function to handle the printing
+*/
+typedef struct printing_format
 {
-	char *sym;
-	int (*f)(va_list);
-};
-typedef struct convert conver_t;
+	char flag;
+	int width;
+	char mod;
+	int precision;
+	bool zero_fill;
+	int replaced;
+	bool validity;
+	char *(*printer)(va_list, struct printing_format *);
+} printing_format;
+/*printer functions*/
+char *_putchar(va_list, printing_format *);
+char *_putstr(va_list, printing_format *);
+char *_putint(va_list, printing_format *);
+char *_putuint(va_list, printing_format *);
+char *_putbin(va_list, printing_format *);
+char *_puthex(va_list, printing_format *);
+char *_putoct(va_list, printing_format *);
+char *_putHex(va_list, printing_format *);
+char *_putadress(va_list, printing_format *);
+char *_putrts(va_list, printing_format *);
+char *_putrot13(va_list, printing_format *);
+char *_putS(va_list, printing_format *);
 
-/* Main functions */
-int parser(const char *format, conver_t f_list[], va_list arg_list);
+/*printf and its helpers*/
 int _printf(const char *format, ...);
-int _write_char(char);
-int print_char(va_list);
-int print_string(va_list);
-int print_percent(va_list);
-int print_integer(va_list);
-int print_number(va_list);
-int print_binary(va_list);
-int print_reversed(va_list arg);
-int rot13(va_list);
-int unsigned_integer(va_list);
-int print_octal(va_list list);
-int print_hex(va_list list);
-int print_heX(va_list list);
+printing_format *parse_format(const char *);
+int buf_push(char *, int *, char *);
+int *print(const char *, va_list, int *, char *);
 
-/*helper functions*/
-unsigned int base_len(unsigned int, int);
-char *rev_string(char *);
-void write_base(char *str);
-char *_memcpy(char *dest, char *src, unsigned int n);
-int print_unsgined_number(unsigned int);
+/*validity checker*/
+bool is_valid_id(char);
+int checkflag(printing_format *, char);
+int checkwidth(printing_format *, const char *);
+int checkprecision(printing_format *, const char *);
+int checkmod(printing_format *, const char *);
 
+/*parser to identify printing format*/
+printing_format *parse_format(const char *);
 
+/*printer identifier*/
+char *(*get_printer(char id))(va_list, printing_format *);
 
-#endif/*HOLBERTON_H*/
+/*num_utils*/
+int _pow(unsigned int, int);
+int _numLen(unsigned int);
+int max(int, int);
+char *to_hex(int);
+
+/*string utils*/
+int _strlen(char *);
+void rev_string(char *);
+void _toStr(unsigned long int, char *);
+char *_strcpy(char *, char *);
+char *rot13(char *);
+
+#endif /*PINTF*/
+
